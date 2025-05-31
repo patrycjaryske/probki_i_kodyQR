@@ -287,6 +287,60 @@ public partial class MainView : UserControl
         SampleList.ItemsSource = null;
         SampleList.ItemsSource = filtered;
     }
+
+    private void PrintQrCode_Click(object? sender, RoutedEventArgs e)
+    {
+        if (SampleList.SelectedItem is not Sample sample)
+            return;
+
+        string qrData = $"ID: {sample.Id}\nNazwa: {sample.Name}\nTyp: {sample.Type}\nData: {sample.CollectionDate:yyyy-MM-dd}\nUwagi: {sample.Notes}";
+
+        using var qrGenerator = new QRCodeGenerator();
+        using var qrDataObj = qrGenerator.CreateQrCode(qrData, QRCodeGenerator.ECCLevel.Q);
+        using var qrCode = new QRCode(qrDataObj);
+        using var qrBitmap = qrCode.GetGraphic(20);
+
+        // Rysujemy bitmapę z nazwą próbki pod spodem
+        var width = qrBitmap.Width;
+        var height = qrBitmap.Height + 40;
+
+        using var combinedBitmap = new Bitmap(width, height);
+        using (var g = Graphics.FromImage(combinedBitmap))
+        {
+            g.Clear(System.Drawing.Color.White);
+            g.DrawImage(qrBitmap, 0, 0);
+
+            // Rysuj nazwę próbki
+            using var font = new Font("Arial", 14);
+            using var brush = new SolidBrush(System.Drawing.Color.Black);
+            var textSize = g.MeasureString(sample.Name, font);
+            var x = (width - textSize.Width) / 2;
+            var y = qrBitmap.Height + 5;
+            g.DrawString(sample.Name, font, brush, x, y);
+        }
+
+        // Tymczasowy plik
+        string tempPath = Path.Combine(Path.GetTempPath(), $"QR_Print_{sample.Id}.png");
+        combinedBitmap.Save(tempPath, ImageFormat.Png);
+
+        // Uruchom drukowanie przez domyślną aplikację
+        try
+        {
+            var psi = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = tempPath,
+                Verb = "print",
+                UseShellExecute = true,
+                CreateNoWindow = true
+            };
+            System.Diagnostics.Process.Start(psi);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Błąd drukowania: {ex.Message}");
+        }
+    }
+
 }
 
 

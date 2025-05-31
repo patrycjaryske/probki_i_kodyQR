@@ -64,15 +64,15 @@
 
 			<TextBox x:Name="NotesBox" Watermark="Opis" AcceptsReturn="True" Height="60" />
 
-			<Button Content="Zapisz próbkę" Click="SaveSample_Click" />
+			<Button Content="Zapisz/zaaktualizuj próbkę" Click="SaveSample_Click" />
 
 			<Button Content="Generuj kod QR" Click="GenerateQrCode_Click" />
 			<StackPanel>
 				<Image Name="QrImage" Width="200" Height="200"/>
 				<TextBlock Name="QrNameTextBlock" Margin="0,10,0,0" FontWeight="Bold" FontSize="16"/>
 			</StackPanel>
-			<Button Content="Zapisz kod QR do PNG" Click="SaveQrCode_Click" Margin="5"/>
-
+			<Button Content="Zapisz kod QR do PNG" Click="SaveQrCode_Click"/>
+			<Button Content="Drukuj kod QR" Click="PrintQrCode_Click"/>
 		</StackPanel>
 	</StackPanel>
 
